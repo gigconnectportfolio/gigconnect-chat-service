@@ -12,10 +12,12 @@ import * as http from "node:http";
 import {appRoutes} from "./routes";
 import {Channel} from "amqplib";
 import {createConnection} from "./queues/connection";
+import {Server} from "socket.io";
 
 const SERVER_PORT = 4005;
 const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'Chat Server', 'debug');
 export let chatChannel: Channel;
+export let socketIOChatObject: Server;
 
 
 export const start = (app: Application): void => {
@@ -32,19 +34,31 @@ export const start = (app: Application): void => {
 async function startServer(app: Application): Promise<void> {
     try {
         const httpServer: http.Server = new http.Server(app);
-        log.info(`Chat server has started with process id ${process.pid}`);
-        await new Promise<void>((resolve, reject) => {
-            httpServer.listen(SERVER_PORT, () => {
-                log.info(`Chat Service is running on port ${SERVER_PORT}`);
-                resolve(); // <-- keeps process running
-            });
-            httpServer.on('error', (err) => {
-                console.error('HTTP server error:', err);
-                reject(err);
-            });
-        });
+        const socketIO: Server = await createSocketIO(httpServer);
+        startHttpServer(httpServer);
+        socketIOChatObject = socketIO;
     } catch (error) {
         log.log('error', 'Chat service startserver() error method:', error);
+    }
+}
+
+async function createSocketIO(httpServer: http.Server): Promise<Server> {
+    return new Server(httpServer, {
+        cors: {
+            origin: config.API_GATEWAY_URL,
+            methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        }
+    });
+}
+
+function startHttpServer(httpServer: http.Server): void {
+    try {
+        log.info(`Chat server has started with process id ${process.pid}`);
+        httpServer.listen(SERVER_PORT, () => {
+            log.info(`Chat Service is running on port ${SERVER_PORT}`);
+        });
+    } catch (error) {
+        log.log('error', 'Chat service starthttpserver() error method:', error);
     }
 }
 
@@ -87,6 +101,8 @@ async function startQueues(): Promise<void> {
 function startElasticSearch(): void {
     checkConnection();
 }
+
+
 
 function ChatErrorHandler(app: Application): void {
     app.use((err: IErrorResponse, _req: Request, res: Response, _next: NextFunction) => {
