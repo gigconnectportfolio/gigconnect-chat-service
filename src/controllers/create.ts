@@ -57,7 +57,6 @@ export const message = async (req: Request, res: Response, next: NextFunction): 
             isRead: req.body.isRead,
             hasOffer: req.body.hasOffer,
             offer: req.body.offer,
-            createdAt: new Date()
         }
 
         if (!req.body.hasConversationId){

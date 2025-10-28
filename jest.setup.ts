@@ -7,13 +7,8 @@ jest.mock('./src/database', () => {
 
 
 
-jest.mock('src/services/gig.service');
+jest.mock('src/services/message.service');
 jest.mock('@kariru-k/gigconnect-shared');
 jest.mock('src/elasticsearch');
-jest.mock('src/schemes/gig');
+jest.mock('src/schemes/message');
 jest.mock('@elastic/elasticsearch');
-
-
-jest.mock('uuid', () => ({
-    v4: () => 'mock-uuid',
-}));

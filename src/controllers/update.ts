@@ -10,6 +10,7 @@ import {StatusCodes} from "http-status-codes";
  * If there are any errors, it passes them to the next middleware for handling.
  * @param {Request} req - The incoming request object containing message data.
  * @param {Response} res - The outgoing response object to send back to the client.
+ * @param {NextFunction} next - The next middleware function for error handling.
  */
 export const offer = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -35,6 +36,7 @@ export const offer = async (req: Request, res: Response, next: NextFunction): Pr
  * If there are any errors, it passes them to the next middleware for handling.
  * @param {Request} req - The incoming request object containing message data.
  * @param {Response} res - The outgoing response object to send back to the client.
+ * @param {NextFunction} next - The next middleware function for error handling.
  */
 export const markMultipleMessages = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -59,6 +61,7 @@ export const markMultipleMessages = async (req: Request, res: Response, next: Ne
  * If there are any errors, it passes them to the next middleware for handling.
  * @param {Request} req - The incoming request object containing message data.
  * @param {Response} res - The outgoing response object to send back to the client.
+ * @param {NextFunction} next - The next middleware function for error handling.
  */
 export const markSingleMessage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
